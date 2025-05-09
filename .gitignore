@@ -16,7 +16,7 @@ npm-debug.log*
 dist/
 build/
 out/
-parsed-sites/
+parsed-site/
 
 # Cache directories
 .npm

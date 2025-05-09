@@ -1,31 +1,34 @@
 import * as dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import fetchData from "./fetchSiteData.js";
-import writeToFile from "./writeSiteData.js";
-import scrapData from "./scrapData.js";
+import fetchData from "./lib/fetchSiteData.js";
+import writeToFile from "./lib/writeData.js";
+import links from "./lib/links.js";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const targetUrl = process.env.TARGET_URL;
+
 if (!targetUrl) {
   console.error("Error: TARGET_URL is not defined in .env file");
   process.exit(1);
 }
-const outputDirectory = process.env.OUTPUT_DIRECTORY || "./parsed-sites";
+const outputDirectory = process.env.OUTPUT_DIRECTORY || "./parsed-site";
 const absoluteOutputDirectory = outputDirectory.startsWith("./")
   ? path.join(__dirname, outputDirectory.substring(2))
   : outputDirectory;
 
 try {
-  const html = await fetchData(targetUrl);
-  const sourcesHtmlLinks = await scrapData.html(html);
-  console.log("sourcesHtmlLinks", sourcesHtmlLinks);
+  const { html, stylesheets } = await fetchData(targetUrl);
 
   writeToFile(html, "index.html", absoluteOutputDirectory);
+
+  stylesheets.forEach(({ stylesheet, link }) => {
+    const { path, name } = links.getPathAndName(link, absoluteOutputDirectory);
+    writeToFile(stylesheet, name, path);
+  });
 } catch (error) {
   console.error(error);
 }

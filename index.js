@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import fetchData from "./lib/fetchSiteData.js";
 import writeToFile from "./lib/writeData.js";
 import links from "./lib/links.js";
+import saveData from "./lib/writeData.js";
 
 dotenv.config();
 
@@ -21,13 +22,18 @@ const absoluteOutputDirectory = outputDirectory.startsWith("./")
   : outputDirectory;
 
 try {
-  const { html, stylesheets } = await fetchData(targetUrl);
+  const { html, stylesheets, images } = await fetchData(targetUrl);
 
-  writeToFile(html, "index.html", absoluteOutputDirectory);
+  saveData.text(html, "index.html", absoluteOutputDirectory);
 
   stylesheets.forEach(({ stylesheet, link }) => {
     const { path, name } = links.getPathAndName(link, absoluteOutputDirectory);
-    writeToFile(stylesheet, name, path);
+    saveData.text(stylesheet, name, path);
+  });
+
+  images.forEach(({ image, link }) => {
+    const { path, name } = links.getPathAndName(link, absoluteOutputDirectory);
+    saveData.image(image, name, path);
   });
 } catch (error) {
   console.error(error);

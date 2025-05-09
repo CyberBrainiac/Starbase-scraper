@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fetchData from "./fetchSiteData.js";
 import writeToFile from "./writeSiteData.js";
+import scrapData from "./scrapData.js";
 
 dotenv.config();
 
@@ -19,6 +20,12 @@ const absoluteOutputDirectory = outputDirectory.startsWith("./")
   ? path.join(__dirname, outputDirectory.substring(2))
   : outputDirectory;
 
-const data = await fetchData(targetUrl, "get");
+try {
+  const html = await fetchData(targetUrl);
+  const sourcesHtmlLinks = await scrapData.html(html);
+  console.log("sourcesHtmlLinks", sourcesHtmlLinks);
 
-writeToFile(data, "index.html", absoluteOutputDirectory);
+  writeToFile(html, "index.html", absoluteOutputDirectory);
+} catch (error) {
+  console.error(error);
+}

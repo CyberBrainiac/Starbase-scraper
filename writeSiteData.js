@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 
 export default async function writeToFile(data, fileName, outputDir) {
   if (!data || !fileName || !outputDir) {
@@ -18,6 +19,7 @@ export default async function writeToFile(data, fileName, outputDir) {
 
     console.log(`HTML successfully saved to ${outputPath}`);
   } catch (error) {
-    throw new Error("Failed write data to file", error);
+    console.error("Error writing file");
+    throw error;
   }
 }

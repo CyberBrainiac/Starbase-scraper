@@ -1,12 +1,37 @@
-import axios from "axios";
+import puppeteer from "puppeteer";
 
-export default async function fetchData(url, method) {
-  console.log(`Fetching Data from ${url}...`);
+export default async function fetchData(url, method = "GET", postData) {
+  console.log(`Fetching data from ${url} using ${method}...`);
+
+  const browser = await puppeteer.launch({ headless: "new" });
+  const page = await browser.newPage();
+
+  await page.setUserAgent(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+  );
+
   try {
-    const response = await axios[method](url);
-    const data = response.data;
-    return data;
+    if (method === "POST") {
+      await page.setRequestInterception(true);
+      page.once("request", (req) => {
+        req.continue({
+          method: "POST",
+          postData: JSON.stringify(postData),
+          headers: {
+            ...req.headers(),
+            "Content-Type": "application/json",
+          },
+        });
+      });
+    }
+
+    await page.goto(url, { waitUntil: "networkidle2" });
+    const content = await page.content();
+    return content;
   } catch (error) {
-    throw new Error("Erorr fetching data", error);
+    console.error("Error fetching data:", error);
+    throw error;
+  } finally {
+    await browser.close();
   }
 }

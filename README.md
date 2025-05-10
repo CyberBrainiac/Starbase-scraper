@@ -21,10 +21,16 @@ npm install
 npm start
 ```
 
-## Serve parsed output
+## Serve parsed output using PROXY
 ```bash
-npm run serve
+git clone https://github.com/CyberBrainiac/Starbase-proxy.git
+cd starbase-proxy
+npm install
 ```
+- copy "parsed-site" folder from starbase-scraper to root of starbase-proxy directory
+- starbase-proxy using command ``` npm run start ```
+- open browser url: http://localhost:3000/
+  
 ## Dependencies
 - cheerio
 - dotenv

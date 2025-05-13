@@ -1,9 +1,9 @@
 import * as dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import fetchData from "./lib/fetchSiteData.js";
 import links from "./lib/links.js";
 import saveData from "./lib/writeData.js";
+import mainParseFunction from "./lib/parseSite.js";
 
 dotenv.config();
 
@@ -21,32 +21,37 @@ const absoluteOutputDirectory = outputDirectory.startsWith("./")
   : outputDirectory;
 
 try {
-  const { html, stylesheets, images, scripts, fonts } = await fetchData(
+  const { html, stylesheets, images, scripts, fonts } = await mainParseFunction(
     targetUrl
   );
 
   saveData.text(html, "index.html", absoluteOutputDirectory);
+  console.log("HTML saved");
 
   stylesheets.forEach(({ stylesheet, link }) => {
     const { path, name } = links.getPathAndName(link, absoluteOutputDirectory);
     saveData.text(stylesheet, name, path);
   });
+  console.log("CSS saved");
 
   fonts.forEach(({ font, link }) => {
     const { path, name } = links.getPathAndName(link, absoluteOutputDirectory);
 
     saveData.font(font, name, path);
   });
+  console.log("Fonts saved");
 
   images.forEach(({ image, link }) => {
     const { path, name } = links.getPathAndName(link, absoluteOutputDirectory);
     saveData.image(image, name, path);
   });
+  console.log("Images saved");
 
   scripts.forEach(({ script, link }) => {
     const { path, name } = links.getPathAndName(link, absoluteOutputDirectory);
     saveData.text(script, name, path);
   });
+  console.log("Scripts saved");
 } catch (error) {
   console.error(error);
 }

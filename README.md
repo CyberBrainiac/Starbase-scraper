@@ -29,7 +29,7 @@ npm install
 ```
 - copy "parsed-site" folder from starbase-scraper to root of starbase-proxy directory
 - starbase-proxy using command ``` npm run start ```
-- open browser url: http://localhost:3000/
+- open browser url: http://localhost:3001/
   
 ## Dependencies
 - cheerio
